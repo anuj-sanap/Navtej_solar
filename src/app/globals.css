@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-surface-muted: #eef1f5;
+  --color-text-primary: #0b255a;
+  --color-text-secondary: #64748b;
+  --color-border: #dfe5ec;
+  --color-brand-primary: #0b255a;
+  --color-brand-primary-hover: #123a82;
+  --color-brand-secondary: #ffd23f;
+  --color-accent: #ffd23f;
+  --color-hero-sky: #edf4ff;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+::selection {
+  background: #ffd23f;
+  color: #0b255a;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-rise-in {
+  animation: rise-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-rise-in-delay {
+  animation: rise-in 700ms 120ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes float-in {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal { animation: float-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.delay-1 { animation-delay: 100ms; }
+.delay-2 { animation-delay: 180ms; }
+.delay-3 { animation-delay: 260ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise-in,
+  .animate-rise-in-delay {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
