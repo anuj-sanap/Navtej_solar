@@ -6,10 +6,9 @@ export const site = {
 
 export const navItems = [
   { href: "/", label: "Home" },
-  { href: "/#services", label: "Services" },
-  { href: "/projects", label: "Projects" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
+  { href: "/projects", label: "Projects" },
 ] as const;
 
 export const primaryCta = {

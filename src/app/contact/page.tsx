@@ -1,15 +1,20 @@
-import type { Metadata } from "next";
-import { PlaceholderPage } from "@/components/layout/PlaceholderPage";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Contact",
-};
+import { FormEvent, useState } from "react";
+import { Navbar } from "@/components/layout/Navbar";
+import { Container } from "@/components/ui/Container";
 
 export default function ContactPage() {
-  return (
-    <PlaceholderPage
-      title="Get a free consultation"
-      description="The enquiry form, WhatsApp action and confirmed contact details will be added in a later task. This page is a navigation placeholder for the homepage preview."
-    />
-  );
+  const [status, setStatus] = useState("idle");
+  const [message, setMessage] = useState("");
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setStatus("loading");
+    const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
+    try {
+      const response = await fetch("/api/leads", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      if (!response.ok) throw new Error("Unable to send your enquiry.");
+      setStatus("success"); setMessage("Thanks. A Navtej solar advisor will contact you shortly."); event.currentTarget.reset();
+    } catch (error) { setStatus("error"); setMessage(error instanceof Error ? error.message : "Something went wrong. Please call us directly."); }
+  }
+  return <><Navbar /><main className="bg-background"><section className="bg-white py-16 sm:py-24"><Container><p className="text-xs font-bold uppercase tracking-[.18em] text-[#b07d00]">Start a conversation</p><h1 className="mt-4 max-w-3xl text-5xl font-semibold leading-[1.05] text-brand-primary sm:text-6xl">Let&apos;s make your energy bill lighter.</h1><p className="mt-5 max-w-2xl text-lg leading-8 text-text-secondary">Tell us what you are planning and we will come back with a clear next step, not a hard sell.</p></Container></section><section className="py-12 sm:py-20"><Container><div className="grid gap-10 lg:grid-cols-[.75fr_1.25fr]"><div><h2 className="text-3xl font-semibold text-brand-primary">Talk to Navtej</h2><div className="mt-8 grid gap-6 text-sm">{[["Call", "+91 98765 43210", "tel:+919876543210"], ["WhatsApp", "Chat with our team", "https://wa.me/919876543210"], ["Email", "hello@navtejsolartech.in", "mailto:hello@navtejsolartech.in"]].map(([label, value, href]) => <a key={label} href={href} className="rounded-2xl bg-white p-5 shadow-sm"><span className="block text-xs font-bold uppercase tracking-[.14em] text-[#b07d00]">{label}</span><span className="mt-2 block font-bold text-brand-primary">{value}</span></a>)}<div className="rounded-2xl bg-brand-primary p-5 text-white"><span className="block text-xs font-bold uppercase tracking-[.14em] text-brand-secondary">Service locations</span><span className="mt-2 block font-bold">Nashik, Sinnar and nearby areas</span></div></div></div><form onSubmit={submit} className="rounded-3xl bg-white p-6 shadow-[0_16px_45px_rgba(11,37,90,.08)] sm:p-8"><h2 className="text-2xl font-semibold text-brand-primary">Request a free quote</h2><div className="mt-7 grid gap-5 sm:grid-cols-2"><label className="text-sm font-bold text-brand-primary">Full name<input name="name" required className="mt-2 w-full rounded-xl border border-border px-4 py-3 font-normal outline-none focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10" /></label><label className="text-sm font-bold text-brand-primary">Phone number<input name="phone" required pattern="[0-9+() -]{10,}" className="mt-2 w-full rounded-xl border border-border px-4 py-3 font-normal outline-none focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10" /></label><label className="text-sm font-bold text-brand-primary">Email (optional)<input name="email" type="email" className="mt-2 w-full rounded-xl border border-border px-4 py-3 font-normal outline-none focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10" /></label><label className="text-sm font-bold text-brand-primary">Location<input name="location" required className="mt-2 w-full rounded-xl border border-border px-4 py-3 font-normal outline-none focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10" placeholder="Nashik" /></label><label className="text-sm font-bold text-brand-primary sm:col-span-2">How can we help?<textarea name="message" required rows={4} className="mt-2 w-full rounded-xl border border-border px-4 py-3 font-normal outline-none focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10" placeholder="Tell us about your home, business or current bill" /></label></div>{message && <p role={status === "error" ? "alert" : "status"} className={`mt-5 rounded-xl px-4 py-3 text-sm ${status === "error" ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"}`}>{message}</p>}<button disabled={status === "loading"} className="mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-brand-primary px-6 text-sm font-bold text-white disabled:opacity-60">{status === "loading" ? "Sending..." : "Send my enquiry"}</button></form></div></Container></section></main></>;
 }

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { PlaceholderPage } from "@/components/layout/PlaceholderPage";
+import Link from "next/link";
+import { Navbar } from "@/components/layout/Navbar";
+import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
   title: "About",
@@ -7,9 +9,6 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <PlaceholderPage
-      title="About Navtej Solartech Energy"
-      description="This page is a temporary placeholder for the client homepage preview. Company story, mission and verified credentials will be added when content is confirmed."
-    />
+    <><Navbar /><main className="bg-background"><section className="bg-white py-16 sm:py-24"><Container><p className="text-xs font-bold uppercase tracking-[.18em] text-[#b07d00]">Built in Nashik</p><h1 className="mt-4 max-w-3xl text-5xl font-semibold leading-[1.05] text-brand-primary sm:text-6xl">Solar advice that feels local, clear and dependable.</h1><p className="mt-6 max-w-2xl text-lg leading-8 text-text-secondary">Navtej Solartech Energy helps homes and businesses make a confident switch to clean energy. We combine practical system design with patient guidance, tidy installation and support that stays after handover.</p></Container></section><section className="py-16 sm:py-24"><Container><div className="grid gap-6 md:grid-cols-3"><article className="rounded-3xl bg-brand-primary p-7 text-white"><p className="text-xs font-bold uppercase tracking-[.16em] text-brand-secondary">Our mission</p><h2 className="mt-5 text-2xl font-semibold">Make clean power easier to choose.</h2><p className="mt-4 text-sm leading-6 text-white/70">Clear recommendations, honest estimates and an installation experience that respects your time and property.</p></article><article className="rounded-3xl bg-white p-7 shadow-[0_12px_32px_rgba(11,37,90,.06)]"><p className="text-xs font-bold uppercase tracking-[.16em] text-[#b07d00]">Our promise</p><h2 className="mt-5 text-2xl font-semibold text-brand-primary">Design for the life you actually live.</h2><p className="mt-4 text-sm leading-6 text-text-secondary">Every system starts with your usage, roof, budget and long-term goals, not a one-size-fits-all package.</p></article><article className="rounded-3xl bg-white p-7 shadow-[0_12px_32px_rgba(11,37,90,.06)]"><p className="text-xs font-bold uppercase tracking-[.16em] text-[#b07d00]">Our coverage</p><h2 className="mt-5 text-2xl font-semibold text-brand-primary">Nashik and nearby areas.</h2><p className="mt-4 text-sm leading-6 text-text-secondary">Nashik Road, Gangapur Road, Indira Nagar, Satpur, Sinnar and surrounding communities.</p></article></div><div className="mt-12 border-t border-border pt-12"><h2 className="text-4xl font-semibold text-brand-primary">Why customers choose Navtej</h2><div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{["Free site assessment", "Subsidy guidance", "Quality components", "Responsive after-sales"].map((item) => <div key={item} className="rounded-2xl border border-border bg-white p-5 text-sm font-bold text-brand-primary">✓ {item}</div>)}</div></div></Container></section><section className="bg-brand-primary py-16 text-white"><Container className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between"><h2 className="max-w-xl text-3xl font-semibold">Ready to understand your solar potential?</h2><Link href="/contact" className="inline-flex min-h-12 items-center justify-center rounded-full bg-brand-secondary px-6 text-sm font-bold text-brand-primary">Talk to an advisor</Link></Container></section></main></>
   );
 }

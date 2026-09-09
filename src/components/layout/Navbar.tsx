@@ -5,7 +5,6 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { navItems, primaryCta, site } from "@/data/site";
-import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import logo from "../../../navtej logo.jpeg";
 
@@ -28,13 +27,6 @@ export function Navbar() {
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur-xl">
@@ -71,20 +63,9 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="hidden lg:block">
-          <Button href={primaryCta.href} className="px-4 text-[13px]">
-            {primaryCta.label}
-          </Button>
-        </div>
-
-        <div className="hidden items-center gap-3 text-xs font-bold text-brand-primary xl:flex">
-          <a href="https://wa.me/919876543210" aria-label="Chat with Navtej Solartech Energy on WhatsApp" className="text-[#159447]">WhatsApp</a>
-          <a href="tel:+919876543210" aria-label="Call Navtej Solartech Energy">+91 98765 43210</a>
-        </div>
-
         <button
           type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full text-text-primary ring-1 ring-border lg:hidden"
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-text-primary ring-1 ring-border"
           aria-expanded={open}
           aria-controls="mobile-navigation"
           onClick={() => setOpen((value) => !value)}
@@ -112,26 +93,27 @@ export function Navbar() {
 
       <div
         id="mobile-navigation"
-        className={`lg:hidden ${open ? "block" : "hidden"}`}
+        className={`absolute right-5 top-full z-50 origin-top-right transition-all duration-200 sm:right-6 lg:right-8 ${open ? "visible scale-100 opacity-100" : "invisible scale-95 opacity-0"}`}
       >
-        <div className="border-t border-border bg-white">
-          <Container className="flex flex-col gap-1 py-4">
-            {navItems.map((item) => (
+        <div className="w-max max-w-[calc(100vw-2.5rem)] rounded-b-2xl rounded-t-2xl border border-border bg-white p-3 shadow-[0_18px_40px_rgba(11,37,90,.16)]">
+          <div className="flex flex-col items-end gap-1">
+            <Link href="/login" className="w-fit rounded-xl px-3 py-3 text-right text-base font-bold text-brand-primary hover:bg-surface-muted" onClick={() => setOpen(false)}>
+              Log in
+            </Link>
+            {[{ href: "/services", label: "Services" }, { href: "/calculator", label: "Calculator" }, { href: "/preview", label: "3D Preview" }].map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-xl px-3 py-3 text-base font-medium text-text-primary hover:bg-surface-muted"
+                className="w-fit rounded-xl px-3 py-3 text-right text-base font-medium text-text-primary hover:bg-surface-muted"
                 onClick={() => setOpen(false)}
               >
                 {item.label}
               </Link>
             ))}
-            <div className="pt-2">
-              <Button href={primaryCta.href} className="w-full">
-                {primaryCta.label}
-              </Button>
-            </div>
-          </Container>
+            <Link href={primaryCta.href} className="w-fit rounded-xl px-3 py-3 text-right text-base font-medium text-text-primary hover:bg-surface-muted" onClick={() => setOpen(false)}>{primaryCta.label}</Link>
+            <a href="https://wa.me/919876543210" className="w-fit rounded-xl px-3 py-3 text-right text-base font-medium text-[#159447] hover:bg-surface-muted">WhatsApp</a>
+            <a href="tel:+919876543210" className="w-fit rounded-xl px-3 py-3 text-right text-base font-medium text-text-primary hover:bg-surface-muted">+91 98765 43210</a>
+          </div>
         </div>
       </div>
     </header>
