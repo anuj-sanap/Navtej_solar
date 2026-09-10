@@ -12,7 +12,7 @@
   --color-brand-secondary: #ffd23f;
   --color-accent: #ffd23f;
   --color-hero-sky: #edf4ff;
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter);
 }
 
 html {
@@ -24,8 +24,25 @@ body {
   color: var(--color-text-primary);
 }
 
-h1, h2, h3, h4 {
-  font-family: var(--font-dm-serif), Georgia, serif;
+h1 {
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+h1.font-semibold,
+h2.font-semibold,
+h3.font-semibold,
+h4.font-semibold {
+  font-weight: 700;
+}
+
+h1.animate-rise-in-delay,
+h1.reveal {
+  font-weight: 800;
+}
+
+h2, h3, h4 {
+  font-weight: 700;
   letter-spacing: 0;
 }
 

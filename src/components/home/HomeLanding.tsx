@@ -48,20 +48,22 @@ export function HomeLanding() {
 
   return (
     <>
-      <section id="home" className="relative isolate min-h-[650px] overflow-hidden bg-[#e9f0f7]">
-        <Image src={images.hero} alt="Solar panels installed on a modern rooftop in warm sunlight" fill priority className="object-cover object-center" sizes="100vw" />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(247,248,250,.98)_0%,rgba(247,248,250,.9)_39%,rgba(247,248,250,.35)_72%,rgba(247,248,250,.1)_100%)]" />
+      <section id="home" className="relative isolate min-h-[650px] overflow-hidden bg-[#dce4e8]">
+        <Image src={images.hero} alt="Solar panels installed on a modern rooftop in warm sunlight" fill priority className="object-cover object-center brightness-[.94] contrast-[1.04] saturate-[.38] sepia-[.1] grayscale-[.08]" sizes="100vw" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(20,31,48,.72)_0%,rgba(28,43,61,.56)_22%,rgba(45,67,82,.3)_45%,rgba(54,80,94,.22)_65%,rgba(25,39,53,.38)_84%,rgba(13,22,32,.58)_100%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_30%,rgba(255,255,255,.08)_0%,rgba(255,255,255,.025)_35%,transparent_65%)] mix-blend-screen" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[18%] bg-[linear-gradient(to_bottom,transparent,rgba(13,22,32,.2))]" />
         <Container className="relative flex min-h-[650px] items-center py-20">
           <div className="max-w-2xl">
-            <p className="reveal inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-[.14em] text-brand-primary shadow-sm"><span className="h-2 w-2 rounded-full bg-brand-secondary" /> Free Site Visit in Nashik</p>
-            <h1 className="reveal delay-1 mt-7 max-w-xl text-5xl font-semibold leading-[1.02] tracking-[-.04em] text-brand-primary sm:text-6xl lg:text-7xl">Power Your Home with <span className="text-[#d39c00]">Clean, Reliable Solar</span></h1>
-            <p className="reveal delay-2 mt-6 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">Turn your rooftop into a reliable source of clean power. We manage installation, subsidy assistance, net metering and after-sales support from start to finish.</p>
+            <p className="reveal inline-flex items-center gap-2 rounded-full border border-white/25 bg-[#273449]/45 px-4 py-2 text-xs font-bold uppercase tracking-[.14em] text-white shadow-sm backdrop-blur-[2px]"><span className="h-2 w-2 rounded-full bg-[#d9c08a]" /> Free Site Visit in Nashik</p>
+            <h1 className="reveal delay-1 mt-7 max-w-[44rem] text-[clamp(2.7rem,6.4vw,5.25rem)] font-semibold leading-[.98] tracking-[-.035em] text-white [text-shadow:0_2px_18px_rgba(15,23,42,.38)]"><span className="block whitespace-nowrap">Power Your Home</span><span className="block whitespace-nowrap">with <span className="text-[#d4bd8c]">Clean, Reliable</span></span><span className="block text-[#d4bd8c]">Solar</span></h1>
+            <p className="reveal delay-2 mt-6 max-w-xl text-base leading-7 text-[#f3f4f6] [text-shadow:0_2px_14px_rgba(15,23,42,.58)] sm:text-lg">Turn your rooftop into a reliable source of clean power. We manage installation, subsidy assistance, net metering and after-sales support from start to finish.</p>
             <div className="reveal delay-3 mt-8 flex flex-wrap gap-3">
-              <Link href="#quote" className="inline-flex min-h-12 items-center justify-center rounded-full bg-brand-primary px-6 text-sm font-bold text-white shadow-[0_12px_30px_rgba(11,37,90,.22)] transition hover:-translate-y-1 hover:bg-brand-primary-hover">Get Free Quote <span className="ml-2">↗</span></Link>
-              <a href="tel:+919876543210" className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 text-sm font-bold text-brand-primary ring-1 ring-slate-200 transition hover:-translate-y-1 hover:ring-brand-primary/30">Call Now</a>
-              <a href="https://wa.me/919876543210" className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#25D366] px-5 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-[#1da851]">WhatsApp</a>
+              <Link href="#quote" className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 text-sm font-bold text-[#1f2937] shadow-[0_12px_30px_rgba(15,23,42,.3)] transition hover:-translate-y-1 hover:bg-[#f3f4f6]">Get Free Quote <span className="ml-2">↗</span></Link>
+              <a href="tel:+919876543210" className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/35 bg-[#273449]/40 px-6 text-sm font-bold text-white ring-1 ring-white/10 transition hover:-translate-y-1 hover:bg-[#273449]/65">Call Now</a>
+              <a href="https://wa.me/919876543210" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#d9c08a]/50 bg-[#d9c08a]/90 px-5 text-sm font-bold text-[#1f2937] transition hover:-translate-y-1 hover:bg-[#d9c08a]">WhatsApp</a>
             </div>
-            <div className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-xs font-bold text-brand-primary"><span>✓ MNRE guidance</span><span>✓ Net metering support</span><span>✓ 25-year panel warranty</span></div>
+            <div className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-xs font-bold text-white/85"><span>✓ MNRE guidance</span><span>✓ Net metering support</span><span>✓ 25-year panel warranty</span></div>
           </div>
         </Container>
       </section>
