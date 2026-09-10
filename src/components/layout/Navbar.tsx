@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { navItems, primaryCta, site } from "@/data/site";
 import { Container } from "@/components/ui/Container";
-import logo from "../../../navtej logo.jpeg";
+import logo from "@/assets/images/navtej-logo.jpeg";
 
 function isActive(pathname: string, href: string) {
   if (href.includes("#")) {

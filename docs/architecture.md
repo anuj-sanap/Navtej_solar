@@ -1,4 +1,4 @@
-# Navtej Solar Tech Energy — Architecture
+x# Navtej Solar Tech Energy — Architecture
 
 ## 1. Architecture Principles
 - Keep the system simple for the project scope.
