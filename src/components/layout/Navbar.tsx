@@ -236,13 +236,14 @@ export function Navbar() {
             </button>
           </div>
 
-          {/* 2. SCROLLABLE BODY (Proper flex-1 min-h-0 with overscroll-contain) */}
+          {/* 2. SCROLLABLE BODY (flex-1 h-0 min-h-0 with overscroll-contain & touch scrolling) */}
           <div
             tabIndex={0}
-            className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-5 space-y-6 focus:outline-none"
+            className="flex-1 h-0 min-h-0 overflow-y-auto overscroll-contain p-5 space-y-6 focus:outline-none touch-pan-y"
             style={{
               scrollbarWidth: "thin",
-              scrollbarColor: "#cbd5e1 transparent",
+              scrollbarColor: "#94a3b8 #f1f5f9",
+              WebkitOverflowScrolling: "touch",
             }}
           >
             {/* 1. GET FREE QUOTE (Prominently featured) */}
