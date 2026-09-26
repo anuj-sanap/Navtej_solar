@@ -1,39 +1,34 @@
-import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { AUTH_COOKIE_NAME, verifyAuthToken, isOwnerUser } from "@/lib/auth";
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request });
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
-        },
-      },
-    },
-  );
+  const { pathname } = request.nextUrl;
+  const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
+  const user = token ? await verifyAuthToken(token) : null;
 
-  const { data: { user } } = await supabase.auth.getUser();
-  const isOwnerRoute = request.nextUrl.pathname.startsWith("/owner");
-  const adminEmail = process.env.SUPABASE_ADMIN_EMAIL?.toLowerCase();
-
-  if (isOwnerRoute && (!user || user.email?.toLowerCase() !== adminEmail)) {
-    const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = "/login";
-    loginUrl.searchParams.set("next", request.nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
+  // Protect Calculator route - require sign in as requested
+  if (pathname.startsWith("/calculator")) {
+    if (!user) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = "/login";
+      loginUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
   }
 
-  return response;
+  // Protect Owner routes - require admin/owner role
+  if (pathname.startsWith("/owner")) {
+    if (!user || !isOwnerUser(user)) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = "/login";
+      loginUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/owner/:path*"],
+  matcher: ["/owner/:path*", "/calculator"],
 };
