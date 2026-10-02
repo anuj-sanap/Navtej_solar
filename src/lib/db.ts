@@ -1,13 +1,45 @@
 import mongoose from "mongoose";
 
-const uri = process.env.MONGODB_URI;
-let cached = (globalThis as typeof globalThis & { mongoose?: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null } }).mongoose;
-if (!cached) { cached = { conn: null, promise: null }; (globalThis as typeof globalThis & { mongoose?: typeof cached }).mongoose = cached; }
+interface MongooseCache {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+}
 
-export async function connectDatabase() {
-  if (!uri) return null;
-  if (cached?.conn) return cached.conn;
-  if (!cached?.promise) cached!.promise = mongoose.connect(uri, { bufferCommands: false });
-  cached!.conn = await cached!.promise;
-  return cached!.conn;
+const globalForMongoose = globalThis as unknown as { mongoose?: MongooseCache };
+
+let cached = globalForMongoose.mongoose;
+if (!cached) {
+  cached = { conn: null, promise: null };
+  globalForMongoose.mongoose = cached;
+}
+
+export async function connectDatabase(): Promise<typeof mongoose | null> {
+  const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/navtej_solar";
+
+  if (!uri) {
+    console.error("[Database] MONGODB_URI is not set and no fallback available.");
+    return null;
+  }
+
+  if (cached?.conn && mongoose.connection.readyState === 1) {
+    return cached.conn;
+  }
+
+  if (!cached?.promise) {
+    const opts = {
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 5000,
+    };
+    cached!.promise = mongoose.connect(uri, opts);
+  }
+
+  try {
+    cached!.conn = await cached!.promise;
+    return cached!.conn;
+  } catch (error) {
+    cached!.promise = null;
+    cached!.conn = null;
+    console.error("[Database] Error connecting to MongoDB:", error);
+    return null;
+  }
 }
