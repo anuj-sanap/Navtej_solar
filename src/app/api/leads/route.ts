@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     } = parsed.data;
 
     const requestedSize = systemSizeKw ?? calculatorResult?.systemSizeKw;
-    const calcData = requestedSize ? calculateSolar(requestedSize) : calculatorResult;
+    const calcData = requestedSize ? calculateSolar(requestedSize, electricityBill) : calculatorResult;
 
     const leadRecord = {
       name,
@@ -86,12 +86,15 @@ export async function POST(request: Request) {
     whatsappText += `📍 *Location:* ${location}\n`;
     if (email) whatsappText += `📧 *Email:* ${email}\n`;
     if (plotSize) whatsappText += `🏠 *Plot/Roof Size:* ${plotSize} sq ft\n`;
-    if (electricityBill) whatsappText += `⚡ *Monthly Bill:* ₹${electricityBill}\n`;
+    if (electricityBill) whatsappText += `⚡ *Monthly Bill:* ₹${electricityBill.toLocaleString("en-IN")}\n`;
     if (requestedSize) whatsappText += `🔆 *Requested System:* ${requestedSize} kW\n`;
     if (calcData?.estimatedCostInr) {
       whatsappText += `💰 *Est. Cost:* ${inr.format(calcData.estimatedCostInr)}\n`;
       whatsappText += `💵 *Est. Annual Savings:* ${inr.format(calcData.annualSavingInr)}\n`;
-      whatsappText += `⏱️ *Payback:* ${calcData.paybackYears} yrs\n`;
+      if (calcData?.billReductionPercent) {
+        whatsappText += `📉 *Bill Reduction:* ~${calcData.billReductionPercent}%\n`;
+      }
+      whatsappText += `⏱️ *Payback:* ${typeof calcData.paybackYears === "number" ? calcData.paybackYears.toFixed(1) : calcData.paybackYears} yrs\n`;
     }
     whatsappText += `📲 *Contact Preference:* ${contactMethod || "WhatsApp"}\n`;
     if (message) whatsappText += `💬 *Note:* ${message}\n`;
