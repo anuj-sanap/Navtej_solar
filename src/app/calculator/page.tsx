@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Container } from "@/components/ui/Container";
 import { calculateSolar, getRecommendedSystemSize, type SolarCalculation } from "@/lib/calculator/calculate";
 import { solarCalculatorConfig } from "@/lib/calculator/config";
+import { sendToMakeWebhook } from "@/lib/make-webhook";
 
 function formatInr(val: number): string {
   return `₹${Math.round(val).toLocaleString("en-IN")}`;
@@ -103,27 +104,50 @@ export default function CalculatorPage() {
     const form = leadFormRef.current ?? event.currentTarget;
     if (!form) return;
 
+    const formData = new FormData(form);
+
+    // Honeypot — bots fill this hidden field; real users never see it
+    if (formData.get("website")) {
+      const name = String(formData.get("name") || "").trim();
+      const location = String(formData.get("location") || "").trim();
+      setSubmittedLeadInfo({ name, location });
+      setLeadStatus("Thanks! Your estimate has been recorded.");
+      return;
+    }
+
     setPending(true);
     setLeadStatus("");
 
-    const formData = new FormData(form);
     const payload = Object.fromEntries(formData.entries());
     const name = String(payload.name || "").trim();
+    const phone = String(payload.phone || "").trim();
+    const email = String(payload.email || "").trim();
     const location = String(payload.location || "").trim();
+    const autoMessage = `Solar estimate calculation for monthly bill of ₹${monthlyBill.toLocaleString("en-IN")} with a ${result.systemSizeKw} kW package. Estimated cost: ₹${result.estimatedCostInr.toLocaleString("en-IN")}, Annual savings: ₹${result.annualSavingInr.toLocaleString("en-IN")}, New bill: ~₹${(result.newMonthlyBillInr ?? 0).toLocaleString("en-IN")}/mo.`;
 
     try {
-      const response = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...payload,
-          location,
-          electricityBill: monthlyBill,
-          systemSizeKw: result.systemSizeKw,
-          message: `Solar estimate calculation for monthly bill of ₹${monthlyBill.toLocaleString("en-IN")} with a ${result.systemSizeKw} kW package. Estimated cost: ₹${result.estimatedCostInr.toLocaleString("en-IN")}, Annual savings: ₹${result.annualSavingInr.toLocaleString("en-IN")}, New bill: ~₹${(result.newMonthlyBillInr ?? 0).toLocaleString("en-IN")}/mo.`,
-          calculatorResult: result,
+      const [response] = await Promise.all([
+        fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...payload,
+            location,
+            electricityBill: monthlyBill,
+            systemSizeKw: result.systemSizeKw,
+            message: autoMessage,
+            calculatorResult: result,
+          }),
         }),
-      });
+        sendToMakeWebhook({
+          name,
+          phone,
+          email,
+          message: autoMessage,
+          page: "calculator",
+          timestamp: new Date().toISOString(),
+        }),
+      ]);
 
       const body = await response.json();
       if (!response.ok) throw new Error(body.error ?? "We could not send your request.");
@@ -247,11 +271,10 @@ export default function CalculatorPage() {
                             key={preset}
                             type="button"
                             onClick={() => handleBillChange(preset, true)}
-                            className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${
-                              isSelected
+                            className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${isSelected
                                 ? "bg-brand-primary text-white shadow-sm"
                                 : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                            }`}
+                              }`}
                           >
                             ₹{preset.toLocaleString("en-IN")}
                           </button>
@@ -475,6 +498,15 @@ export default function CalculatorPage() {
                           </p>
 
                           <form ref={leadFormRef} onSubmit={submitLead} className="mt-5 grid gap-4 sm:grid-cols-2">
+                            {/* Honeypot field — hidden from humans, traps bots */}
+                            <input
+                              name="website"
+                              type="text"
+                              tabIndex={-1}
+                              autoComplete="off"
+                              aria-hidden="true"
+                              style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, width: 0 }}
+                            />
                             <input
                               required
                               name="name"

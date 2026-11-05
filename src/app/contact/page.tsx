@@ -3,6 +3,7 @@
 import { FormEvent, useState, useRef } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Container } from "@/components/ui/Container";
+import { sendToMakeWebhook } from "@/lib/make-webhook";
 
 export default function ContactPage() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -15,20 +16,42 @@ export default function ContactPage() {
     const form = formRef.current ?? event.currentTarget;
     if (!form) return;
 
+    const formData = new FormData(form);
+
+    // Honeypot — bots fill this hidden field; real users never see it
+    if (formData.get("website")) {
+      // Fake success to fool the bot
+      setSubmittedData({ name: String(formData.get("name") || "").trim(), location: String(formData.get("location") || "").trim() });
+      setStatus("success");
+      return;
+    }
+
     setStatus("loading");
     setMessage("");
 
-    const formData = new FormData(form);
     const payload = Object.fromEntries(formData.entries());
     const name = String(payload.name || "").trim();
+    const phone = String(payload.phone || "").trim();
+    const email = String(payload.email || "").trim();
     const location = String(payload.location || "").trim();
+    const msgText = String(payload.message || "").trim();
 
     try {
-      const response = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const [response] = await Promise.all([
+        fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }),
+        sendToMakeWebhook({
+          name,
+          phone,
+          email,
+          message: msgText || `Contact enquiry from ${location}`,
+          page: "contact",
+          timestamp: new Date().toISOString(),
+        }),
+      ]);
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error ?? "Unable to send your enquiry.");
@@ -165,6 +188,15 @@ export default function ContactPage() {
                   </p>
 
                   <div className="mt-7 grid gap-5 sm:grid-cols-2">
+                    {/* Honeypot field — hidden from humans, traps bots */}
+                    <input
+                      name="website"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, width: 0 }}
+                    />
                     <label className="text-sm font-bold text-brand-primary">
                       Full name
                       <input

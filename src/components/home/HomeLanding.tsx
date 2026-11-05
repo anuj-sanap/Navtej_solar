@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useEffect, type FormEvent } from "react";
 import { Container } from "@/components/ui/Container";
+import { sendToMakeWebhook } from "@/lib/make-webhook";
 
 const images = {
   hero: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=2200&q=85",
@@ -179,6 +180,15 @@ export function HomeLanding({ initialProjects, initialTestimonials }: HomeLandin
     }
 
     const formData = new FormData(form);
+
+    // Honeypot — bots fill this hidden field; real users never see it
+    if (formData.get("website")) {
+      setSubmittedInfo({ name: String(formData.get("name") || "").trim(), location: String(formData.get("location") || "").trim() });
+      setSubmitted(true);
+      setSubmitting(false);
+      return;
+    }
+
     const name = String(formData.get("name") || "").trim();
     const phone = String(formData.get("phone") || "").trim();
     const location = String(formData.get("location") || "").trim();
@@ -189,19 +199,29 @@ export function HomeLanding({ initialProjects, initialTestimonials }: HomeLandin
     const electricityBill = billRaw ? Number(billRaw) : undefined;
 
     try {
-      const response = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const [response] = await Promise.all([
+        fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            phone,
+            location,
+            plotSize,
+            electricityBill,
+            message: `Homepage quick quote request for ${location}. Plot: ${plotRaw || "Not specified"} sq ft, Bill: ₹${billRaw || "Not specified"}.`,
+            source: "homepage_quote",
+          }),
+        }),
+        sendToMakeWebhook({
           name,
           phone,
-          location,
-          plotSize,
-          electricityBill,
-          message: `Homepage quick quote request for ${location}. Plot: ${plotRaw || "Not specified"} sq ft, Bill: ₹${billRaw || "Not specified"}.`,
-          source: "homepage_quote",
+          email: "",
+          message: `Homepage quote — Location: ${location}. Plot: ${plotRaw || "Not specified"} sq ft, Bill: ₹${billRaw || "Not specified"}.`,
+          page: "homepage",
+          timestamp: new Date().toISOString(),
         }),
-      });
+      ]);
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not submit quote enquiry.");
@@ -494,6 +514,15 @@ export function HomeLanding({ initialProjects, initialTestimonials }: HomeLandin
               </div>
             ) : (
               <form ref={formRef} onSubmit={handleSubmit} className="rounded-3xl bg-white p-6 shadow-[0_16px_45px_rgba(11,37,90,.08)] sm:p-8">
+                {/* Honeypot field — hidden from humans, traps bots */}
+                <input
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, width: 0 }}
+                />
                 <div className="grid gap-5 sm:grid-cols-2">
                   <label className="text-xs font-bold text-brand-primary sm:col-span-2">
                     Full name
